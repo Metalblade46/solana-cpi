@@ -1,9 +1,13 @@
+use borsh::{BorshDeserialize, BorshSerialize};
 use solana_program::{
-    account_info::AccountInfo, entrypoint, entrypoint::ProgramResult, pubkey::Pubkey,
+    account_info::{next_account_info, AccountInfo},
+    entrypoint,
+    entrypoint::ProgramResult,
+    pubkey::Pubkey,
 };
 entrypoint!(process_instruction);
 
-#[derive(BorshSerialize, BorshDeserialize, Debug)]
+#[derive(BorshSerialize, BorshDeserialize)]
 struct OnChainData {
     count: u32,
 }
@@ -17,7 +21,7 @@ fn process_instruction(
     let mut iter = accounts.iter();
     let data_account = next_account_info(&mut iter)?;
     let mut counter = OnChainData::try_from_slice(&data_account.data.borrow_mut())?;
-    if (counter.count == 0) {
+    if counter.count == 0 {
         counter.count = 1;
     } else {
         counter.count *= 2;
